@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
     name="mc.inappbilling"
-    default="build_release" >
+    default="release" >
 
+    <property file="local.properties" />
+    <property file="ant.properties" />
     <property environment="env" />
 
-    <condition
-        property="sdk.dir"
-        value="${env.ANDROID_HOME}" >
-
+    <condition property="sdk.dir" value="${env.ANDROID_HOME}" >
         <isset property="env.ANDROID_HOME" />
     </condition>
 
     <loadproperties srcFile="project.properties" />
 
+    <fail
+        message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
+        unless="sdk.dir"
+    />
+
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
-    <target name="build_release" >
-
+    <target name="prepare_release" >
+        <xmlproperty
+            collapseAttributes="true"
+            file="AndroidManifest.xml"
+            prefix="xp" />
+        <property
+            name="out.library.jar.file"
+            location="${ant.project.name}-${xp.manifest.android:versionName}.jar" />
+        <delete file="${out.library.jar.file}"/>
         <echo>
-Build GuideMore project library mc.inappbilling
+            Building ${out.absolute.dir}/${ant.project.name}-${xp.manifest.android:versionName}.jar
         </echo>
+    </target>
 
-        <antcall target="release" />
+    <target name="release" depends="prepare_release, android_rules.clean, android_rules.release">
     </target>
 
 </project>

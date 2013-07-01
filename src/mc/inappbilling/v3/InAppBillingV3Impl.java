@@ -48,7 +48,7 @@ public class InAppBillingV3Impl implements IInAppBilling, OnIabPurchaseFinishedL
                     Log.e(LOGTAG, "Problem setting up in-app billing: " + result);
                     if(readyToUseListener != null)
                     {
-                        readyToUseListener.complete(null);
+                        readyToUseListener.error(result.getResponse());
                     }
                 }
                 else
@@ -209,14 +209,14 @@ public class InAppBillingV3Impl implements IInAppBilling, OnIabPurchaseFinishedL
         if(result.isFailure())
         {
             Log.e(LOGTAG, "Error purchasing: " + result);
+            if(purchaseCompleteListener != null)
+                purchaseCompleteListener.error(result.getResponse());
         }
         else
         {
             Log.d(LOGTAG, "Purchase successful.");
-        }
-        if(purchaseCompleteListener != null)
-        {
-            purchaseCompleteListener.complete(purchase);
+            if(purchaseCompleteListener != null)
+                purchaseCompleteListener.complete(purchase);
         }
     }
 }
